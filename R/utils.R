@@ -8,48 +8,62 @@
 #' @import stats
 #' 
 #' @export
-amed = function(model){
+amed <- function(model){
   
-  data   = model$data
-  family = model$family
-  coefs  = attr(model$terms, "term.labels")
+  if (class(model)[1] == "glm"){
+    data   <- model$data
+    coefs  <- attr(model$terms, "term.labels")
+  } else {
+    data    <- model$model
+    coefs   <- attr(model$terms$full, "term.labels")
+  }
+
+  ## Remove interactions and other adjustments
+  coefs <- ifelse(grepl(":|^[A-Za-z].*)$", coefs), NA, coefs) %>%
+    na.omit %>%
+    unclass
   
-  aveMarg = vector("numeric", 0L)
+  if (any(class(data) == "environment") || is.null(data)){
+    stop("GLM (or betareg) model must contain a data argument", call. = FALSE)
+  }
+  
+  aveMarg <- vector("numeric", 0L)
   for (i in seq_along(coefs)){
-    d = eval(parse(text = coefs[i]), data)
+    d <- eval(parse(text = coefs[i]), data)
     
     if (is.character(d)) 
-      d = factor(d)
+      d <- factor(d)
     
     if (is.numeric(d)){
       ## Average Marginal Effects
-      aveMarg[coefs[i]] = dydx_continuous(data, model, coefs[i])
+      aveMarg[coefs[i]] <- dydx_continuous(data, model, coefs[i])
     } else if (is.factor(d)) {
-      ref   = levels(d)[1]
-      levs  = levels(d)[-1]
+      ref   <- levels(d)[1]
+      levs  <- levels(d)[-1]
       d0 = d1 = data
-      d0[[coefs[i]]] = ref
-      pred0 = predict(model, newdata = d0, type = "response")
+      d0[[coefs[i]]] <- ref
+      pred0 <- predict(model, newdata = d0, type = "response")
       
       for (j in levs){
-        d1[[coefs[i]]] = j
-        pred1 = predict(model, newdata = d1, type = "response")
+        d1[[coefs[i]]] <- j
+        pred1 <- predict(model, newdata = d1, type = "response")
         
-        aveMarg[paste0(coefs[i], j)] = mean(pred1 - pred0, na.rm=TRUE)
+        aveMarg[paste0(coefs[i], j)] <- mean(pred1 - pred0, na.rm=TRUE)
       }
     }
   }
   aveMarg
 }
 
+
 ## continuous variable AME
 ## see margins package by Leeper for more on this
-dydx_continuous = function(data, model, variable){
+setstep <- function(x) {
+  x + (max(abs(x), 1, na.rm = TRUE) * sqrt(1e-7)) - x
+}
+
+dydx_continuous <- function(data, model, variable){
   d0 = d1 = data
-  
-  setstep <- function(x) {
-    x + (max(abs(x), 1, na.rm = TRUE) * sqrt(1e-7)) - x
-  }
   
   d0[[variable]] <- d0[[variable]] - setstep(d0[[variable]])
   d1[[variable]] <- d1[[variable]] + setstep(d1[[variable]])
@@ -63,14 +77,14 @@ dydx_continuous = function(data, model, variable){
 
 
 ## function to bootstrap
-.run_mod = function(data, indices, model){
-  model$call["data"] = parse(text = "data[indices, ]")
+.run_mod <- function(data, indices, model){
+  model$call["data"] <- parse(text = "data[indices, ]")
   eval(model$call) %>% 
     amed
 }
-.run_mod_svy = function(data, indices, model){
-  model = model
-  data  = model$data[indices, ]
+.run_mod_svy <- function(data, indices, model){
+  model <- model
+  data  <- model$data[indices, ]
   data$weights = data$.survey.prob.weights
   glm(formula = model$formula, 
       data = data, 
@@ -81,15 +95,27 @@ dydx_continuous = function(data, model, variable){
     amed
 }
 
+## all vars used
+all_used_vars <- function(forms){
+  sapply(forms, paste) %>% 
+    .[!grepl("~", .)] %>% 
+    stringr::str_split(., " ") %>% 
+    unlist() %>% 
+    .[!grepl("\\+|I\\(|\\^|\\/", .)] %>% 
+    stringr::str_trim(.) %>% 
+    unique()
+}
+
+
 ## checks
-.boot_checker = function(boot){
+.boot_checker <- function(boot){
   if(boot > 5000){
-    cat("A bootstrap size above 5000 may take a long time to compute...")
+    message("A bootstrap size above 5000 may take a long time to compute...")
   }
 }
 
 #' @importFrom purrr map
-.ind_checker = function(ind_effects, models, forms=NULL){
+.ind_checker <- function(ind_effects, models, forms=NULL){
   yesno = lapply(ind_effects, function(x) is.character(x) & grepl("-", x)) %>%
     unlist %>%
     all
@@ -117,35 +143,49 @@ dydx_continuous = function(data, model, variable){
   }
 }
 
-.ci_checker = function(ci){
+.ci_checker <- function(ci){
   if (ci > 1 | ci < 0){
     stop("CI must be between 0 and 1.",
          call. = FALSE)
   }
 }
 
-.var_checker = function(data, forms){
-  for (i in seq_along(forms)){
-    yes_no = model.matrix(forms[[i]], data)[, -1] %>%
-      data.frame %>%
-      sapply(function(x) length(unique(x)) == 1) %>%
-      any()
-
-    if (yes_no){
-      warning(paste("Variable(s) to be used in data frame for the formula number", i, "are constant"), 
+.var_checker <- function(data){
+  yes_no <- data %>% 
+    sapply(function(x) length(unique(x)))
+  
+    if (any(yes_no < 2)){
+      warning(paste("Variable", names(data)[, yes_no < 2], "is constant"), 
               call. = FALSE) 
-    }
   }
 }
 
+.nrows_checker <- function(model){
+  pathbc <- model$pathbc
+  pathas <- model$patha
+  
+  df <- vector("list", length(pathas)+1)
+  df[[1]] <- resid(pathbc)
+  for (i in 2:(length(pathas)+1)){
+    
+    df[[i]] <- resid(pathas[[i-1]])
+    
+  }
+  
+  yes_no <- sapply(df, length) %>%
+    sapply(., function(x) x == .[[1]]) %>%
+    all() %>%
+    isTRUE()
+  
+  if (!yes_no){
+    warning(paste("The data sets used in the different paths are of different sizes."), 
+            call. = FALSE) 
+  }
+}
 
-`%>%` = magrittr::`%>%`
-
-
-
-
-
-
+is.mma <- function(mods){
+  class(mods)[1] == "mma"
+}
 
 
 ## Functions from boot for confidence intervals
@@ -203,16 +243,76 @@ perc.ci <- function(t, conf = 0.95, hinv = function(t) t){
 }
 
 ## Other functions
-is.mma = function(x){
+is.mma <- function(x){
   class(x)[1] == "mma"
 }
 
-is.pos = function(x){
+is.pos <- function(x){
   x > 0
 }
 
-is.neg = function(x){
+is.neg <- function(x){
   x < 0
 }
+
+
+
+
+#' re-export magrittr pipe operator
+#'
+#' @importFrom magrittr %>%
+#' @name %>%
+#' @rdname pipe
+#' @export
+NULL
+
+## From tidyverse package
+text_col <- function(x) {
+  # If RStudio not available, messages already printed in black
+  if (!rstudioapi::isAvailable()) {
+    return(x)
+  }
+  
+  if (!rstudioapi::hasFun("getThemeInfo")) {
+    return(x)
+  }
+  
+  theme <- rstudioapi::getThemeInfo()
+  
+  if (isTRUE(theme$dark)) crayon::white(x) else crayon::black(x)
+  
+}
+
+MarginalMediation_version <- function(x) {
+  version <- as.character(unclass(utils::packageVersion(x))[[1]])
+  crayon::italic(paste0(version, collapse = "."))
+}
+
+search_conflicts <- function(path = search()){
+  
+  ## Search for conflicts
+  confs <- conflicts(path,TRUE)
+  ## Grab those with the MarginalMediation package
+  MarginalMediation_conflicts <- confs$`package:MarginalMediation`
+  
+  ## Find which packages have those functions that are conflicted
+  if (length(MarginalMediation_conflicts) != 0){
+    other_conflicts <- list()
+    for (i in MarginalMediation_conflicts){
+      other_conflicts[[i]] <- lapply(confs, function(x) any(grepl(i, x))) %>%
+        do.call("rbind", .) %>%
+        data.frame %>%
+        setNames(c("conflicted")) %>%
+        tibble::rownames_to_column() %>%
+        .[.$conflicted == TRUE &
+            .$rowname != "package:MarginalMediation",]
+    }
+  } else {
+    other_conflicts <- data.frame()
+  }
+  other_conflicts
+}
+
+
 
 

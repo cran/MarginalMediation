@@ -1,6 +1,6 @@
 Package: MarginalMediation
 Title: Marginal Mediation
-Version: 0.5.1
+Version: 0.7.0
 Authors@R: c(person(c("Tyson", "S"), "Barrett", email = "t.barrett@aggiemail.usu.edu", role = c("aut", "cre"),
                     comment = c(ORCID = "0000-0002-2137-1391")),
              person("Angelo", "Canty", role = c("ctb"), 
@@ -15,16 +15,17 @@ Description: Provides the ability to perform "Marginal Mediation"--mediation
    The style of the average marginal effects stems from Thomas Leeper's work on the "margins" package.
    This framework allows the use of categorical mediators and outcomes with little change in interpretation
    from the continuous mediators/outcomes. See <doi:10.13140/RG.2.2.18465.92001> for more details 
-   on the method (peer reviewed articles forthcoming).
-Imports: stats, magrittr, boot, purrr
-Suggests: testthat, knitr, rmarkdown, furniture, margins
+   on the method.
+Imports: stats, magrittr, boot, cli, crayon, rstudioapi, purrr, tibble,
+        furniture, betareg, stringr
+Suggests: testthat, knitr, rmarkdown, margins
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL-2
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2018-04-09 23:14:27 UTC; tyson
+Packaged: 2019-03-04 07:10:59 UTC; tysonbarrett
 Author: Tyson S Barrett [aut, cre] (<https://orcid.org/0000-0002-2137-1391>),
   Angelo Canty [ctb] (S original bootstrap method,
     http://statwww.epfl.ch/davison/BMA/library.html),
@@ -33,4 +34,4 @@ Author: Tyson S Barrett [aut, cre] (<https://orcid.org/0000-0002-2137-1391>),
     https://thomasleeper.com/software.html)
 Maintainer: Tyson S Barrett <t.barrett@aggiemail.usu.edu>
 Repository: CRAN
-Date/Publication: 2018-04-10 13:08:02 UTC
+Date/Publication: 2019-03-04 10:50:02 UTC

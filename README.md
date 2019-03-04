@@ -1,20 +1,19 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-
 [![CRAN](https://www.r-pkg.org/badges/version/MarginalMediation)](https://www.r-pkg.org/badges/version/MarginalMediation)
 [![Rdoc](http://www.rdocumentation.org/badges/version/MarginalMediation)](http://www.rdocumentation.org/packages/MarginalMediation)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/MarginalMediation)](https://cranlogs.r-pkg.org/badges/grand-total/MarginalMediation)
 [![Build
 Status](https://travis-ci.org/TysonStanley/MarginalMediation.svg?branch=master)](https://travis-ci.org/TysonStanley/MarginalMediation)
 
-# MarginalMediation: 0.5.1 <img src="man/figures/mma_hex.jpg" align="right" />
+# MarginalMediation: 0.7.0 <img src="man/figures/mma_hex.jpg" align="right" width="30%" height="30%"/>
 
 The `MarginalMediation` package provides the ability to perform
-**marginal mediation analysis**. It provides a useful framework from
-which to interpret the coefficients in a mediation analysis, especially
-when the mediator(s) and/or outcome is binary or a count (other types of
-outcomes will be added).
+**marginal mediation analysis**. It provides a useful statistical
+framework from which to interpret the coefficients in a mediation
+analysis, especially when the mediator(s) and/or outcome is binary or a
+count (other types of outcomes will be added).
 
 You can install it via:
 
@@ -25,7 +24,8 @@ install.packages("MarginalMediation")
 or
 
 ``` r
-devtools::install_github("tysonstanley/MarginalMediation")
+install.packages("remotes")
+remotes::install_github("tysonstanley/MarginalMediation")
 ```
 
 The main function is `mma()`:
@@ -53,19 +53,29 @@ the output.
 ``` r
 ## Data for the example
 library(furniture)
-#> furniture 1.7.6: learn more at tysonbarrett.com
+#> ── furniture 1.9.0 ─────────────────────────────────────────────────────────────── learn more at tysonbarrett.com ──
+#> ✔ furniture attached
+#> ✔ No potential conflicts found
 data(nhanes_2010)
+```
 
+``` r
 ## The MarginalMediation package
 library(MarginalMediation)
-#> MarginalMediation 0.5.1: This is beta software.
-#> Please report any bugs (t.barrett@aggiemail.usu.edu).
-pathbc = glm(marijuana ~ home_meals + gender + age + asthma, 
+```
+
+    #> Loading MarginalMediation
+    #> ── MarginalMediation 0.7.0 ─────────────────────────────────────────────────────── learn more at tysonbarrett.com ──
+    #> ✔ MarginalMediation attached
+    #> ✔ No potential conflicts found
+
+``` r
+pathbc <- glm(marijuana ~ home_meals + gender + age + asthma, 
+              data = nhanes_2010, 
+              family = "binomial")
+patha <- glm(home_meals ~ gender + age + asthma,
              data = nhanes_2010, 
-             family = "binomial")
-patha = glm(home_meals ~ gender + age + asthma,
-            data = nhanes_2010, 
-            family = "gaussian")
+             family = "gaussian")
 mma(pathbc, patha,
     ind_effects = c("genderFemale-home_meals",
                     "age-home_meals",
@@ -89,46 +99,55 @@ mma(pathbc, patha,
 #>    ◌ marijuana ~ home_meals + gender + age + asthma
 #>    ◌ home_meals ~ gender + age + asthma 
 #> 
-#> Unstandardized Effects
-#> ⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺
-#> ── Indirect Effects ──
-#>                           A-path   B-path Indirect    Lower   Upper
-#> genderFemale-home_meals -1.34831 -0.00973  0.01312  0.00429 0.02562
-#> age-home_meals          -0.05689 -0.00973  0.00055  0.00003 0.00139
-#> asthmaNo-home_meals     -0.00428 -0.00973  0.00004 -0.00639 0.00672
+#> Regression Models: 
 #> 
-#> ── Direct Effects ──
-#>                Direct    Lower   Upper
-#> genderFemale  0.10430  0.04813 0.15967
-#> age           0.00066 -0.00603 0.00848
-#> asthmaNo     -0.00172 -0.06947 0.07061
-#> -----
+#>      marijuana ~ 
+#>                           Est      SE   Est/SE P-Value
+#>         (Intercept)  -0.39400 0.38028 -1.03608 0.30017
+#>         home_meals   -0.04062 0.01363 -2.98051 0.00288
+#>         genderFemale  0.43161 0.11723  3.68169 0.00023
+#>         age           0.00276 0.01470  0.18754 0.85123
+#>         asthmaNo     -0.00717 0.15004 -0.04778 0.96189
+#> 
+#>      home_meals ~ 
+#>                           Est      SE   Est/SE P-Value
+#>         (Intercept)   6.56883 0.76462  8.59100 0.00000
+#>         genderFemale -1.34831 0.23910 -5.63913 0.00000
+#>         age          -0.05689 0.03017 -1.88565 0.05955
+#>         asthmaNo     -0.00428 0.31293 -0.01368 0.98909
+#> 
+#> Unstandardized Mediated Effects: 
+#> 
+#>    Indirect Effects: 
+#> 
+#>      marijuana ~ 
+#>                                    Indirect    Lower   Upper
+#>         genderFemale => home_meals  0.01312  0.00429 0.02562
+#>         age => home_meals           0.00055  0.00003 0.00139
+#>         asthmaNo => home_meals      0.00004 -0.00639 0.00672
+#> 
+#>    Direct Effects: 
+#> 
+#>      marijuana ~ 
+#>                        Direct    Lower   Upper
+#>         genderFemale  0.10430  0.04813 0.15967
+#>         age           0.00066 -0.00603 0.00848
+#>         asthmaNo     -0.00172 -0.06947 0.07061
 ```
 
 The print method provides:
 
-1.  the `a` path,
-2.  the `b` path,
-3.  the indirect effect with the confidence interval, and
-4.  the direct effect with the confidence interval.
+1.  the individual regression results,
+2.  the `a` paths,
+3.  the `b` paths,
+4.  the indirect effect with the confidence interval, and
+5.  the direct effect with the confidence interval.
 
-These are all average marginal effects, and are, therefore, in terms of
-the corresponding endogenous variable’s units.
+The regressions are in their original (non-AME) units while the indirect
+and direct effects are in the AME units—the units of the outcome—in this
+case, risk of using marijuana.
 
 ### Conclusions
 
-This is currently beta but I am excited to provide an initial working
-release. Let me know if you find any bugs or want to discuss the method
+Let me know if you find any bugs or want to discuss the method
 (<t.barrett@aggiemail.usu.edu>).
-
-### Final Notes
-
-More will be done to `MarginalMediation` as it is under development,
-including:
-
-1.  More bootstrapping options (e.g., Bias-Corrected Bootstrap)
-2.  More distributional options as currently only gaussian, binomial,
-    and Poisson are available (e.g., zero-inflated distributions,
-    multinomial distributions)
-
-Thanks\!
