@@ -109,9 +109,10 @@ all_used_vars <- function(forms){
 
 ## checks
 .boot_checker <- function(boot){
-  if(boot > 5000){
+  if(boot < 10)
+    warning("Very few bootstrapped samples requested. Confidence intervals will not be trustworthy.")
+  if(boot > 5000)
     message("A bootstrap size above 5000 may take a long time to compute...")
-  }
 }
 
 #' @importFrom purrr map
@@ -154,10 +155,12 @@ all_used_vars <- function(forms){
   yes_no <- data %>% 
     sapply(function(x) length(unique(x)))
   
-    if (any(yes_no < 2)){
-      warning(paste("Variable", names(data)[, yes_no < 2], "is constant"), 
-              call. = FALSE) 
-  }
+  if (any(yes_no < 2))
+    warning(paste("Variable", names(data)[, yes_no < 2], "is constant"), call. = FALSE) 
+  
+  classes <- sapply(data, class)
+  if (any(classes == "logical"))
+    stop("Variables of type logical not supported. Change to numeric or factor variable.", .call = FALSE)
 }
 
 .nrows_checker <- function(model){
@@ -254,8 +257,6 @@ is.pos <- function(x){
 is.neg <- function(x){
   x < 0
 }
-
-
 
 
 #' re-export magrittr pipe operator

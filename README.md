@@ -1,13 +1,15 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
 
 [![CRAN](https://www.r-pkg.org/badges/version/MarginalMediation)](https://www.r-pkg.org/badges/version/MarginalMediation)
-[![Rdoc](http://www.rdocumentation.org/badges/version/MarginalMediation)](http://www.rdocumentation.org/packages/MarginalMediation)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/MarginalMediation)](https://cranlogs.r-pkg.org/badges/grand-total/MarginalMediation)
-[![Build
-Status](https://travis-ci.org/TysonStanley/MarginalMediation.svg?branch=master)](https://travis-ci.org/TysonStanley/MarginalMediation)
+[![R build
+status](https://github.com/TysonStanley/MarginalMediation/workflows/R-CMD-check/badge.svg)](https://github.com/TysonStanley/MarginalMediation/actions)
+[![R-CMD-check](https://github.com/TysonStanley/MarginalMediation/workflows/R-CMD-check/badge.svg)](https://github.com/TysonStanley/MarginalMediation/actions)
+<!-- badges: end -->
 
-# MarginalMediation: 0.7.0 <img src="man/figures/mma_hex.jpg" align="right" width="30%" height="30%"/>
+# MarginalMediation: `v 0.7.2` <img src="man/figures/mma_hex.jpg" align="right" width="30%" height="30%"/>
 
 The `MarginalMediation` package provides the ability to perform
 **marginal mediation analysis**. It provides a useful statistical
@@ -53,9 +55,6 @@ the output.
 ``` r
 ## Data for the example
 library(furniture)
-#> ── furniture 1.9.0 ─────────────────────────────────────────────────────────────── learn more at tysonbarrett.com ──
-#> ✔ furniture attached
-#> ✔ No potential conflicts found
 data(nhanes_2010)
 ```
 
@@ -64,10 +63,10 @@ data(nhanes_2010)
 library(MarginalMediation)
 ```
 
-    #> Loading MarginalMediation
-    #> ── MarginalMediation 0.7.0 ─────────────────────────────────────────────────────── learn more at tysonbarrett.com ──
-    #> ✔ MarginalMediation attached
-    #> ✔ No potential conflicts found
+    #> ℹ Loading MarginalMediation
+    #> ── MarginalMediation 0.7.2 ─────────────────── learn more at tysonbarrett.com ──
+    #> ✓ MarginalMediation attached
+    #> ✓ No potential conflicts found
 
 ``` r
 pathbc <- glm(marijuana ~ home_meals + gender + age + asthma, 
@@ -82,8 +81,7 @@ mma(pathbc, patha,
                     "asthmaNo-home_meals"),
     boot = 500)
 #> 
-#> calculating a paths... b and c paths... Done.
-                                                                                 
+#> calculating a paths... b and c paths... Done.                                                                                 
 #> ┌───────────────────────────────┐
 #> │  Marginal Mediation Analysis  │
 #> └───────────────────────────────┘
@@ -122,17 +120,17 @@ mma(pathbc, patha,
 #> 
 #>      marijuana ~ 
 #>                                    Indirect    Lower   Upper
-#>         genderFemale => home_meals  0.01312  0.00429 0.02562
-#>         age => home_meals           0.00055  0.00003 0.00139
-#>         asthmaNo => home_meals      0.00004 -0.00639 0.00672
+#>         genderFemale => home_meals  0.01312  0.00357 0.02435
+#>         age => home_meals           0.00055  0.00000 0.00143
+#>         asthmaNo => home_meals      0.00004 -0.00652 0.00596
 #> 
 #>    Direct Effects: 
 #> 
 #>      marijuana ~ 
 #>                        Direct    Lower   Upper
-#>         genderFemale  0.10430  0.04813 0.15967
-#>         age           0.00066 -0.00603 0.00848
-#>         asthmaNo     -0.00172 -0.06947 0.07061
+#>         genderFemale  0.10430  0.04950 0.16045
+#>         age           0.00066 -0.00652 0.00793
+#>         asthmaNo     -0.00172 -0.07896 0.06809
 ```
 
 The print method provides:

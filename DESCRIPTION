@@ -1,7 +1,7 @@
 Package: MarginalMediation
 Title: Marginal Mediation
-Version: 0.7.0
-Authors@R: c(person(c("Tyson", "S"), "Barrett", email = "t.barrett@aggiemail.usu.edu", role = c("aut", "cre"),
+Version: 0.7.2
+Authors@R: c(person(c("Tyson", "S"), "Barrett", email = "t.barrett88@gmail.com", role = c("aut", "cre"),
                     comment = c(ORCID = "0000-0002-2137-1391")),
              person("Angelo", "Canty", role = c("ctb"), 
                     comment = "S original bootstrap method, http://statwww.epfl.ch/davison/BMA/library.html"),
@@ -17,21 +17,20 @@ Description: Provides the ability to perform "Marginal Mediation"--mediation
    from the continuous mediators/outcomes. See <doi:10.13140/RG.2.2.18465.92001> for more details 
    on the method.
 Imports: stats, magrittr, boot, cli, crayon, rstudioapi, purrr, tibble,
-        furniture, betareg, stringr
-Suggests: testthat, knitr, rmarkdown, margins
+        furniture, stringr
+Suggests: testthat, knitr, rmarkdown, margins, betareg
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL-2
-LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2019-03-04 07:10:59 UTC; tysonbarrett
+Packaged: 2022-04-15 01:14:46 UTC; tysonbarrett
 Author: Tyson S Barrett [aut, cre] (<https://orcid.org/0000-0002-2137-1391>),
   Angelo Canty [ctb] (S original bootstrap method,
     http://statwww.epfl.ch/davison/BMA/library.html),
   Brian D. Ripley [ctb] (R port, bootstrap method),
   Thomas Leeper [ctb] (Vectorized marginal effects,
     https://thomasleeper.com/software.html)
-Maintainer: Tyson S Barrett <t.barrett@aggiemail.usu.edu>
+Maintainer: Tyson S Barrett <t.barrett88@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-03-04 10:50:02 UTC
+Date/Publication: 2022-04-15 08:42:36 UTC

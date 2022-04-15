@@ -1,44 +1,75 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2019-03-04" />
+<meta name="date" content="2022-04-14" />
 
 <title>Marginal Mediation</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -47,9 +78,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -95,7 +126,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -103,6 +134,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -116,9 +148,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -287,8 +316,12 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
+
+
+
 
 </head>
 
@@ -298,21 +331,31 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Marginal Mediation</h1>
-<h4 class="date"><em>2019-03-04</em></h4>
+<h4 class="date">2022-04-14</h4>
 
 
 
 <div id="what-is-marginal-mediation" class="section level2">
 <h2>What is “Marginal Mediation”</h2>
-<p>Marginal Mediation is the general method of interpreting indirect and direct effects in terms of the average marginal effects. When the mediator(s) and outcome are continuous, this is the same as the normal <code>a x b</code> method. When either the mediator(s) or outcome is dichotomous, then it allows a simple transformation from the log-odds scale to probability.</p>
-<p>For example, when the mediator is dichotomous and the outcome is continuous, we have a probability times a value in the unit of the outcome. Simply, the resulting indirect or total effect is in the units of the outcome.</p>
+<p>Marginal Mediation is the general method of interpreting indirect and
+direct effects in terms of the average marginal effects. When the
+mediator(s) and outcome are continuous, this is the same as the normal
+<code>a x b</code> method. When either the mediator(s) or outcome is
+dichotomous, then it allows a simple transformation from the log-odds
+scale to probability.</p>
+<p>For example, when the mediator is dichotomous and the outcome is
+continuous, we have a probability times a value in the unit of the
+outcome. Simply, the resulting indirect or total effect is in the units
+of the outcome.</p>
 </div>
 <div id="how-to-use-marginalmediation" class="section level2">
 <h2>How to Use <code>MarginalMediation</code></h2>
-<p>To demonstrate the main functions in <code>MarginalMediation</code>, we are going to use a data set from the <code>furniture</code> package called <code>nhanes_2010</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(furniture)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">data</span>(<span class="st">&quot;nhanes_2010&quot;</span>)</a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="kw">names</span>(nhanes_<span class="dv">2010</span>)</a></code></pre></div>
+<p>To demonstrate the main functions in <code>MarginalMediation</code>,
+we are going to use a data set from the <code>furniture</code> package
+called <code>nhanes_2010</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(furniture)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;nhanes_2010&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(nhanes_2010)</span></code></pre></div>
 <pre><code>##  [1] &quot;id&quot;         &quot;gen_health&quot; &quot;mod_active&quot; &quot;vig_active&quot; &quot;home_meals&quot;
 ##  [6] &quot;gender&quot;     &quot;age&quot;        &quot;marijuana&quot;  &quot;illicit&quot;    &quot;rehab&quot;     
 ## [11] &quot;asthma&quot;     &quot;overweight&quot; &quot;cancer&quot;     &quot;low_int&quot;    &quot;down&quot;      
@@ -320,19 +363,22 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## [21] &quot;speak_move&quot; &quot;dead&quot;       &quot;difficulty&quot; &quot;active&quot;</code></pre>
 <div id="mma" class="section level3">
 <h3><code>mma()</code></h3>
-<p>This is the main function of the package. It takes data, two (or more in the future) formulas relating to the outcome and mediators, the family of the generalized linear model (GLM) regression functions, the indirect effects to compute, and the number of bootstrapped samples.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">pathbc &lt;-<span class="st"> </span><span class="kw">glm</span>(marijuana <span class="op">~</span><span class="st"> </span>home_meals <span class="op">+</span><span class="st"> </span>gender <span class="op">+</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>asthma, </a>
-<a class="sourceLine" id="cb3-2" title="2">              <span class="dt">data =</span> nhanes_<span class="dv">2010</span>, </a>
-<a class="sourceLine" id="cb3-3" title="3">              <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</a>
-<a class="sourceLine" id="cb3-4" title="4">patha &lt;-<span class="st"> </span><span class="kw">glm</span>(home_meals <span class="op">~</span><span class="st"> </span>gender <span class="op">+</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>asthma,</a>
-<a class="sourceLine" id="cb3-5" title="5">             <span class="dt">data =</span> nhanes_<span class="dv">2010</span>, </a>
-<a class="sourceLine" id="cb3-6" title="6">             <span class="dt">family =</span> <span class="st">&quot;gaussian&quot;</span>)</a>
-<a class="sourceLine" id="cb3-7" title="7"></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="kw">mma</span>(pathbc, patha,</a>
-<a class="sourceLine" id="cb3-9" title="9">    <span class="dt">ind_effects =</span> <span class="kw">c</span>(<span class="st">&quot;genderFemale-home_meals&quot;</span>,</a>
-<a class="sourceLine" id="cb3-10" title="10">                    <span class="st">&quot;age-home_meals&quot;</span>,</a>
-<a class="sourceLine" id="cb3-11" title="11">                    <span class="st">&quot;asthmaNo-home_meals&quot;</span>),</a>
-<a class="sourceLine" id="cb3-12" title="12">    <span class="dt">boot =</span> <span class="dv">500</span>)</a></code></pre></div>
+<p>This is the main function of the package. It takes data, two (or more
+in the future) formulas relating to the outcome and mediators, the
+family of the generalized linear model (GLM) regression functions, the
+indirect effects to compute, and the number of bootstrapped samples.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pathbc <span class="ot">&lt;-</span> <span class="fu">glm</span>(marijuana <span class="sc">~</span> home_meals <span class="sc">+</span> gender <span class="sc">+</span> age <span class="sc">+</span> asthma, </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> nhanes_2010, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>patha <span class="ot">&lt;-</span> <span class="fu">glm</span>(home_meals <span class="sc">~</span> gender <span class="sc">+</span> age <span class="sc">+</span> asthma,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> nhanes_2010, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">&quot;gaussian&quot;</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">mma</span>(pathbc, patha,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">ind_effects =</span> <span class="fu">c</span>(<span class="st">&quot;genderFemale-home_meals&quot;</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;age-home_meals&quot;</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;asthmaNo-home_meals&quot;</span>),</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">boot =</span> <span class="dv">500</span>)</span></code></pre></div>
 <pre><code>## 
 ## calculating a paths... b and c paths... Done.
                                                                                  </code></pre>
@@ -374,31 +420,37 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## 
 ##      marijuana ~ 
 ##                                    Indirect    Lower   Upper
-##         genderFemale =&gt; home_meals  0.01312  0.00481 0.02348
-##         age =&gt; home_meals           0.00055  0.00001 0.00136
-##         asthmaNo =&gt; home_meals      0.00004 -0.00699 0.00615
+##         genderFemale =&gt; home_meals  0.01312  0.00393 0.02473
+##         age =&gt; home_meals           0.00055  0.00002 0.00142
+##         asthmaNo =&gt; home_meals      0.00004 -0.00583 0.00719
 ## 
 ##    Direct Effects: 
 ## 
 ##      marijuana ~ 
 ##                        Direct    Lower   Upper
-##         genderFemale  0.10430  0.05396 0.15653
-##         age           0.00066 -0.00676 0.00876
-##         asthmaNo     -0.00172 -0.08002 0.07095</code></pre>
+##         genderFemale  0.10430  0.04975 0.15803
+##         age           0.00066 -0.00660 0.00897
+##         asthmaNo     -0.00172 -0.06253 0.07419</code></pre>
 <p>The print method of MMA shows:</p>
 <ol style="list-style-type: decimal">
 <li>information about the overall model,</li>
 <li>the individual regression models,</li>
-<li>the indirect effect (<code>a x b</code>) with its confidence interval, and</li>
+<li>the indirect effect (<code>a x b</code>) with its confidence
+interval, and</li>
 <li>the direct effect with its confidence interval.</li>
 </ol>
-<p>These estimates are all average marginal effects, meaning each are interpreted in terms of the corresponding endogenous variable’s original units. In this example, since marijuana is binary, its original units are probabilities. That means that the indirect and direct effects are risks (or probabilities) of using marijuana.</p>
+<p>These estimates are all average marginal effects, meaning each are
+interpreted in terms of the corresponding endogenous variable’s original
+units. In this example, since marijuana is binary, its original units
+are probabilities. That means that the indirect and direct effects are
+risks (or probabilities) of using marijuana.</p>
 </div>
 <div id="frames" class="section level3">
 <h3><code>frames()</code></h3>
-<p>This function provides the average marginal effects of a GLM model’s parameters. Its syntax is similar to that of <code>mma()</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">frames</span>(pathbc,</a>
-<a class="sourceLine" id="cb6-2" title="2">       <span class="dt">boot =</span> <span class="dv">100</span>)</a></code></pre></div>
+<p>This function provides the average marginal effects of a GLM model’s
+parameters. Its syntax is similar to that of <code>mma()</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">frames</span>(pathbc,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">boot =</span> <span class="dv">100</span>)</span></code></pre></div>
 <pre><code>## 
 ## Bootstrapping...Done.
                                                                                  </code></pre>
@@ -407,23 +459,34 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## └────────────────────────────┘
 ## 
 ##              Estimate   Lower   Upper
-## home_meals    -0.0097 -0.0176 -0.0035
-## genderFemale   0.1043  0.0427  0.1540
-## age            0.0007 -0.0072  0.0099
-## asthmaNo      -0.0017 -0.0656  0.0596
+## home_meals    -0.0097 -0.0158 -0.0034
+## genderFemale   0.1043  0.0434  0.1567
+## age            0.0007 -0.0068  0.0074
+## asthmaNo      -0.0017 -0.0607  0.0818
 ## ────</code></pre>
-<p>We can compare these results to those from the remarkable <code>margins</code> package found at <a href="https://github.com/leeper/margins">https://github.com/leeper/margins</a> from Thomas Leeper. We won’t show them here, but the estimates are the same as those from the <code>frames()</code> function.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;leeper/margins&quot;</span>)</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="kw">library</span>(margins)</a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="kw">summary</span>(<span class="kw">margins</span>(pathbc))</a></code></pre></div>
-<p>The differences are mainly in the confidence intervals since they are based on two different methods. I highly recommend looking into both the delta method (as used in <code>margins</code> and Stata) as well as the bootstrapping method as used in <code>MarginalMediation</code>.</p>
+<p>We can compare these results to those from the remarkable
+<code>margins</code> package found at <a href="https://github.com/leeper/margins">https://github.com/leeper/margins</a>
+from Thomas Leeper. We won’t show them here, but the estimates are the
+same as those from the <code>frames()</code> function.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;leeper/margins&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(margins)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">margins</span>(pathbc))</span></code></pre></div>
+<p>The differences are mainly in the confidence intervals since they are
+based on two different methods. I highly recommend looking into both the
+delta method (as used in <code>margins</code> and Stata) as well as the
+bootstrapping method as used in <code>MarginalMediation</code>.</p>
 </div>
 <div id="conclusions" class="section level3">
 <h3>Conclusions</h3>
-<p>This is currently beta but I am excited to provide an initial working release. Let me know if you find any bugs or want to discuss the method (<a href="mailto:t.barrett@aggiemail.usu.edu" class="email">t.barrett@aggiemail.usu.edu</a>).</p>
+<p>This is currently beta but I am excited to provide an initial working
+release. Let me know if you find any bugs or want to discuss the method
+(<a href="mailto:t.barrett@aggiemail.usu.edu" class="email">t.barrett@aggiemail.usu.edu</a>).</p>
 </div>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
