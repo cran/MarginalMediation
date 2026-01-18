@@ -26,8 +26,8 @@ mma(pathbc, patha,
 frames(pathbc,
        boot = 100)
 
-## ---- eval=FALSE--------------------------------------------------------------
-#  remotes::install_github("leeper/margins")
-#  library(margins)
-#  summary(margins(pathbc))
+## ----eval=FALSE---------------------------------------------------------------
+# remotes::install_github("leeper/margins")
+# library(margins)
+# summary(margins(pathbc))
 

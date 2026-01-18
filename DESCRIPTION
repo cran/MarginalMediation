@@ -1,6 +1,6 @@
 Package: MarginalMediation
 Title: Marginal Mediation
-Version: 0.7.2
+Version: 0.7.3
 Authors@R: c(person(c("Tyson", "S"), "Barrett", email = "t.barrett88@gmail.com", role = c("aut", "cre"),
                     comment = c(ORCID = "0000-0002-2137-1391")),
              person("Angelo", "Canty", role = c("ctb"), 
@@ -21,11 +21,12 @@ Imports: stats, magrittr, boot, cli, crayon, rstudioapi, purrr, tibble,
 Suggests: testthat, knitr, rmarkdown, margins, betareg
 VignetteBuilder: knitr
 Encoding: UTF-8
-License: GPL-2
-RoxygenNote: 7.1.1
+License: GPL-3
+RoxygenNote: 7.3.3
 NeedsCompilation: no
-Packaged: 2022-04-15 01:14:46 UTC; tysonbarrett
-Author: Tyson S Barrett [aut, cre] (<https://orcid.org/0000-0002-2137-1391>),
+Packaged: 2026-01-18 01:13:50 UTC; tysonbarrett
+Author: Tyson S Barrett [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-2137-1391>),
   Angelo Canty [ctb] (S original bootstrap method,
     http://statwww.epfl.ch/davison/BMA/library.html),
   Brian D. Ripley [ctb] (R port, bootstrap method),
@@ -33,4 +34,4 @@ Author: Tyson S Barrett [aut, cre] (<https://orcid.org/0000-0002-2137-1391>),
     https://thomasleeper.com/software.html)
 Maintainer: Tyson S Barrett <t.barrett88@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-04-15 08:42:36 UTC
+Date/Publication: 2026-01-18 03:10:02 UTC
